@@ -1,0 +1,119 @@
+name: Docker-Hub-Build 
+
+on:
+  workflow_dispatch:
+
+jobs:
+  Docker-GCC:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Determine https://github.com/xmake-io/xmake last version
+        id: last_version
+        run: |
+          LAST_VERSION=$(curl -s -H "Accept: application/vnd.github+json" "https://api.github.com/repos/xmake-io/xmake/tags" | jq  -r '.[0].name')
+          echo "::set-output name=last_version::${LAST_VERSION}"
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@master
+        with:
+          platforms: all
+      - 
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@master
+      - 
+        name: Build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: ./Dockerfile.gcc
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: vic1707/xmake:v${{ steps.last_version.outputs.last_version }}
+  
+  Docker-Alpine:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Determine https://github.com/xmake-io/xmake last version
+        id: last_version
+        run: |
+          LAST_VERSION=$(curl -s -H "Accept: application/vnd.github+json" "https://api.github.com/repos/xmake-io/xmake/tags" | jq  -r '.[0].name')
+          echo "::set-output name=last_version::${LAST_VERSION}"
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@master
+        with:
+          platforms: all
+      - 
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@master
+      - 
+        name: Build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: ./Dockerfile.alpine
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: vic1707/xmake:alpine-v${{ steps.last_version.outputs.last_version }}
+
+  Docker-GCC-dev:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Determine https://github.com/xmake-io/xmake last commit
+        id: last_commit
+        run: |
+          LAST_COMMIT_HASH=$(curl -s -H "Accept: application/vnd.github.VERSION.sha" "https://api.github.com/repos/xmake-io/xmake/commits/dev")
+          git init
+          SHORT_COMMIT_HASH=$(git rev-parse --short $LAST_COMMIT_HASH)
+          echo "::set-output name=last_commit_hash::${SHORT_COMMIT_HASH}"
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@master
+        with:
+          platforms: all
+      - 
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@master
+      - 
+        name: Build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: ./Dockerfile.gcc.dev
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: vic1707/xmake:dev.${{ steps.last_commit.outputs.last_commit_hash }}
+
