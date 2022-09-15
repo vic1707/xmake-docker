@@ -2,10 +2,13 @@ name: Docker-Hub-Build
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   Docker-GCC:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       -
         name: Determine https://github.com/xmake-io/xmake last version
@@ -43,6 +46,7 @@ jobs:
   
   Docker-Alpine:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       -
         name: Determine https://github.com/xmake-io/xmake last version
