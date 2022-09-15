@@ -1,0 +1,20 @@
+FROM gcc:12.2.0
+# because source isn't available and ~/.xmake/profile can't run on sh
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+RUN apt update
+RUN apt upgrade -y
+
+# install Xmake dev branch
+RUN git clone -b dev https://github.com/xmake-io/xmake.git --recursive
+RUN cd xmake && make build && ./scripts/get.sh __local__ __install_only__
+# allow xmake as root
+ENV XMAKE_ROOT y
+
+WORKDIR /app
+
+# cleanup
+RUN rm -rf /tmp/.xmake*
+
+ENTRYPOINT bash -c "source ~/.xmake/profile && $0 $@"
+CMD [ "xmake" ]

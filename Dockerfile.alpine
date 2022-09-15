@@ -1,0 +1,20 @@
+FROM alpine
+
+RUN apk update
+RUN apk upgrade
+RUN apk add curl bash
+
+# install Xmake
+RUN bash <(curl -fsSL https://xmake.io/shget.text)
+
+# allow xmake as root
+ENV XMAKE_ROOT y
+
+WORKDIR /app
+
+# cleanup
+RUN rm -rf /var/cache/apk/*
+RUN rm -rf /tmp/.xmake*
+
+ENTRYPOINT bash -c "source ~/.xmake/profile && $0 $@"
+CMD [ "xmake" ]
