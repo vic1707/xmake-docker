@@ -42,7 +42,7 @@ jobs:
           file: ./Dockerfile.gcc
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
-          tags: vic1707/xmake:${{ steps.last_version.outputs.last_version }}
+          tags: vic1707/xmake:${{ steps.last_version.outputs.last_version }}, vic1707/xmake:latest
   
   Docker-Alpine:
     runs-on: ubuntu-latest
