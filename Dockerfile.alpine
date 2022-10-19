@@ -2,7 +2,7 @@ FROM alpine
 
 RUN apk update
 RUN apk upgrade
-RUN apk add curl bash
+RUN apk add curl bash unzip
 
 # install Xmake
 RUN bash <(curl -fsSL https://xmake.io/shget.text)
