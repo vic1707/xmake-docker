@@ -3,6 +3,8 @@ FROM alpine
 RUN apk update
 RUN apk upgrade
 RUN apk add curl bash unzip p7zip
+# because xmake can't get it for ARM64
+RUN apk add cmake
 
 # install Xmake
 RUN bash <(curl -fsSL https://xmake.io/shget.text)
