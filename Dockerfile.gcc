@@ -4,6 +4,8 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 RUN apt update
 RUN apt upgrade -y
+# because xmake can't get it for ARM64
+RUN apt install -y cmake
 
 # install Xmake
 RUN bash <(curl -fsSL https://xmake.io/shget.text)
