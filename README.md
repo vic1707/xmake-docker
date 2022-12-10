@@ -14,5 +14,5 @@ Multiple tags are available:
 ### Run
 
 ```bash
-docker run -it xmake:<tag> xmake --version
+docker run --rm -v $PWD:/app vic1707/xmake:<tag-name> xmake --version
 ```
